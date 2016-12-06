@@ -85,17 +85,17 @@ int main(int argc,char *argv[])
 		oops("init server socket error!\n",1);
 	
 	int sockfd,status,childfd;
-        	signal(SIGCHLD,sig_chld);
-        	for( ; ;)
-        	{
-                	sockfd = accept(listenfd,&client_add,&sa_len);
-                	if(( childfd = fork()) == 0)
-                	{
-                        		close(listenfd);
+        signal(SIGCHLD,sig_chld);
+        for( ; ;)
+        {
+                sockfd = accept(listenfd,&client_add,&sa_len);
+                if(( childfd = fork()) == 0)
+                {
+                        close(listenfd);
     			str_echo(sockfd);
 			exit(0);
-                	}
+                }
 		close(sockfd);
-        	}
+        }
 	return 0;	
 }
