@@ -2,7 +2,7 @@ CC			= g++
 CFLAGS			= -c -Wall
 LDFLAGS			= -lpthread
 SOURCES			= main.cpp Thread.cpp
-INCLUDES		= -I
+INCLUDES		= -I.
 OBJECTS			= $(SOURCES:.cpp=.o)
 TARGET			= thread
 
