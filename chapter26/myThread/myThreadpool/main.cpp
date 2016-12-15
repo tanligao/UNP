@@ -10,6 +10,7 @@ using namespace std;
 
 void func(int num)
 {
+  // the pthread_self have bugs
   cout << "thread" << num << " cur thread id: " << pthread_self() << endl;
 }
 
