@@ -36,7 +36,7 @@ void myThread::start()
 {
 	assert(!m_running);
 	m_running = true;
-	if( pthread_create(&m_tid,NULL,&myThread::_thread_func,this) != 0 )
+	if( pthread_create(&m_tid,NULL,myThread::_thread_func,this) != 0 )
 	{
 		cout << "create pthread error" << endl;
 	}
