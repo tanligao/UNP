@@ -1,7 +1,7 @@
 CC			= g++
-CFLAGS			= -c -Wall
+CFLAGS			= -c -Wall -std=c++11
 LDFLAGS			= -lpthread
-SOURCES			= main.cpp Thread.cpp
+SOURCES			= main.cpp Thread.cpp Mutex.cpp
 INCLUDES		= -I.
 OBJECTS			= $(SOURCES:.cpp=.o)
 TARGET			= thread

@@ -1,57 +1,78 @@
 #include "Thread.h"
 
+#include <assert.h>
 #include <iostream>
-#include <pthread.h>
 
-static void* runThread(void *arg)
+using namespace std;
+
+myThread::myThread(const thread_func &func):
+	m_running(false),
+	m_join(false),
+	run_function(func)
 {
-	return ((Thread*)arg)->run();
+
 }
 
-Thread::Thread():
-	m_started(false),m_joined(false)
+// join
+myThread::~myThread()
 {
-		
+	if( m_running && m_join )
+		pthread_detach(m_tid);
+	if( m_running )
+		pthread_cancel(m_tid);
 }
 
-Thread::~Thread()
+void* myThread::_thread_func(void *arg)
 {
-	if( m_started == 1 && m_joined == 1)
-		pthread_detach(m_thread_id);
-	if( m_started == 1)
-		pthread_cancel(m_thread_id);
-}
-
-int Thread::start()
-{
-	int result = pthread_create(&m_thread_id,NULL,runThread,this);
-	if(result == 0)
-		m_started = true;
-	
-	return result;
-}
-
-int Thread::join()
-{
-	if( !m_joined )
+	myThread *run_thread = static_cast<myThread*>(arg);
+	if( run_thread )
 	{
-		if( !pthread_join(m_thread_id,NULL) )
-		{
-			m_joined = true;
-		}
-		return 0;
+		run_thread->run_in_thread();
+	}
+	return nullptr;
+}
+
+void myThread::start()
+{
+	assert(!m_running);
+	m_running = true;
+	if( pthread_create(&m_tid,NULL,&myThread::_thread_func,this) != 0 )
+	{
+		cout << "create pthread error" << endl;
+	}
+}
+
+int myThread::join()
+{
+	if( !m_join )
+	{
+		m_join = true;
+		return pthread_join(m_tid,NULL);
 	}
 	return -1;
 }
 
-int Thread::detach()
+int myThread::detach()
 {
-	int result = -1;
-	if( m_started == 1 && m_joined == 1)
+	if( m_join && m_join)
 	{
-		result = pthread_detach(m_thread_id);
-		if( result == 0 )
-			m_joined = 0;
+		m_join = false;
+		return pthread_detach(m_tid);
 	}
-	return result;
+	return -1;
 }
+
+void myThread::run_in_thread()
+{
+	assert(m_running);
+	try
+	{
+		if( run_function )
+			run_function();
+	}
+	catch(...)
+	{
+		cout << "run_in_thread throw error" << endl;
+	}
+}
+
